@@ -146,23 +146,23 @@ dotnet test --verbosity normal
 dotnet clean
 ```
 
-## 🧪 Testing
+## Testing
 
-Comprehensive NUnit test suite covering:
+The project includes NUnit tests covering:
 
-- ✅ Spread calculation correctness
-- ✅ Best bid/ask price tracking
-- ✅ Volume aggregation across orders
-- ✅ Order book state management
-- ✅ Multi-order priority handling
+- Spread calculation correctness
+- Best bid/ask price tracking
+- Volume aggregation across orders
+- Order book state management
+- Multi-order priority handling
 
-**Run tests:**
+Run tests:
 ```bash
 cd RealTimeOrderBook.Tests
 dotnet test
 ```
 
-**Sample Test Output:**
+Sample test output:
 ```
 Test run for RealTimeOrderBook.Tests.dll (.NET 8.0)
 Microsoft (R) Test Execution Command Line Tool
@@ -173,19 +173,7 @@ A total of 1 test files matched the specified pattern.
 Passed!  - Failed:     0, Passed:    11, Skipped:     0, Total:    11
 ```
 
-## 📸 Screenshots
-
-### Main Trading Dashboard
-*Professional order book interface with real-time updates*
-
-[Screenshot placeholder - Run the application and capture the UI]
-
-### Live Order Feed
-*Color-coded buy/sell orders with millisecond timestamps*
-
-[Screenshot placeholder - Show DataGrid with active trades]
-
-## 🔧 How It Works
+## Implementation Details
 
 ### Market Simulation Flow
 
