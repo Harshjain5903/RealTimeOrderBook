@@ -97,9 +97,8 @@ git branch -M main
 ```
 
 ### 5. Add Remote Repository
-**Replace `YOUR_USERNAME` with your actual GitHub username:**
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/RealTimeOrderBook.git
+git remote add origin https://github.com/Harshjain5903/RealTimeOrderBook.git
 ```
 
 ### 6. Push to GitHub
