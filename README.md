@@ -104,28 +104,28 @@ RealTimeOrderBook.Tests/
 
 ### Installation & Running
 
-1. **Clone the repository:**
+1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/RealTimeOrderBook.git
+   git clone https://github.com/Harshjain5903/RealTimeOrderBook.git
    cd RealTimeOrderBook
    ```
 
-2. **Restore dependencies:**
+2. Restore dependencies:
    ```bash
    dotnet restore
    ```
 
-3. **Build the solution:**
+3. Build the solution:
    ```bash
    dotnet build
    ```
 
-4. **Run the application:**
+4. Run the application:
    ```bash
    dotnet run --project RealTimeOrderBook/RealTimeOrderBook.csproj
    ```
 
-5. **Run tests:**
+5. Run tests:
    ```bash
    dotnet test
    ```
