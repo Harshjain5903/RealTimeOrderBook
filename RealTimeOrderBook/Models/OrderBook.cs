@@ -7,8 +7,14 @@ using System.Linq;
 
 namespace RealTimeOrderBook.Models
 {
+    /// <summary>
+    /// Thread-safe order book implementation for managing bid/ask orders.
+    /// Maintains best bid, best ask, spread calculation, and volume tracking.
+    /// </summary>
     public class OrderBook
     {
+        private const int MaxOrdersPerSide = 100;
+        
         private readonly object _lock = new object();
         private readonly List<Order> _buyOrders = new List<Order>();
         private readonly List<Order> _sellOrders = new List<Order>();
@@ -19,6 +25,10 @@ namespace RealTimeOrderBook.Models
         public decimal Spread => BestAsk - BestBid;
         public long TotalVolume { get; private set; }
 
+        /// <summary>
+        /// Initializes a new OrderBook for the specified symbol.
+        /// </summary>
+        /// <param name="symbol">Trading symbol (e.g., AAPL, MSFT)</param>
         public OrderBook(string symbol)
         {
             Symbol = symbol;
@@ -27,6 +37,11 @@ namespace RealTimeOrderBook.Models
             TotalVolume = 0;
         }
 
+        /// <summary>
+        /// Adds an order to the book and updates best bid/ask prices.
+        /// Thread-safe operation using lock-based synchronization.
+        /// </summary>
+        /// <param name="order">Order to add to the book</param>
         public void AddOrder(Order order)
         {
             lock (_lock)
@@ -53,17 +68,21 @@ namespace RealTimeOrderBook.Models
                 TotalVolume += order.Quantity;
 
                 // Keep only recent orders (prevent memory growth)
-                if (_buyOrders.Count > 100)
+                if (_buyOrders.Count > MaxOrdersPerSide)
                 {
-                    _buyOrders.RemoveRange(100, _buyOrders.Count - 100);
+                    _buyOrders.RemoveRange(MaxOrdersPerSide, _buyOrders.Count - MaxOrdersPerSide);
                 }
-                if (_sellOrders.Count > 100)
+                if (_sellOrders.Count > MaxOrdersPerSide)
                 {
-                    _sellOrders.RemoveRange(100, _sellOrders.Count - 100);
+                    _sellOrders.RemoveRange(MaxOrdersPerSide, _sellOrders.Count - MaxOrdersPerSide);
                 }
             }
         }
 
+        /// <summary>
+        /// Retrieves current market data in a thread-safe manner.
+        /// </summary>
+        /// <returns>Tuple containing bid, ask, and spread values</returns>
         public (decimal bid, decimal ask, decimal spread) GetMarketData()
         {
             lock (_lock)
@@ -72,6 +91,9 @@ namespace RealTimeOrderBook.Models
             }
         }
 
+        /// <summary>
+        /// Resets the order book to initial state, clearing all orders and prices.
+        /// </summary>
         public void Reset()
         {
             lock (_lock)
