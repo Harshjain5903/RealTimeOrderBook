@@ -1,5 +1,7 @@
 # Real-Time Order Book Desktop Application
 
+**Author:** Harsh Jain
+
 ![.NET](https://img.shields.io/badge/.NET-8.0-512BD4?style=flat-square&logo=dotnet)
 ![C#](https://img.shields.io/badge/C%23-12.0-239120?style=flat-square&logo=c-sharp)
 ![WPF](https://img.shields.io/badge/WPF-Desktop-0078D4?style=flat-square)
