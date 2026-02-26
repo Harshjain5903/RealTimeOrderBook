@@ -58,7 +58,7 @@ RealTimeOrderBook.Tests/
 └── OrderBookTests.cs         # NUnit test suite for pricing logic
 ```
 
-## 🚀 Tech Stack
+## Tech Stack
 
 | Technology | Purpose |
 |-----------|---------|
@@ -71,30 +71,30 @@ RealTimeOrderBook.Tests/
 | **NUnit** | Unit testing framework |
 | **Dispatcher** | UI thread synchronization |
 
-## ⚙️ Features
+## Features
 
-✅ **Real-Time Market Data**
+### Real-Time Market Data
 - Continuous bid/ask price updates every 200ms
 - Realistic price movement simulation (random walk)
 - Best bid/ask tracking with spread calculation
 
-✅ **Order Book Management**
+### Order Book Management
 - Thread-safe order insertion
 - Automatic bid/ask sorting (descending bids, ascending asks)
 - Volume aggregation across all trades
 
-✅ **Live Trade Feed**
+### Live Trade Feed
 - DataGrid showing last 20 trades
 - Color-coded buy (green) and sell (red) orders
 - Millisecond timestamp precision
 
-✅ **UI/UX**
+### UI/UX
 - Responsive controls (Start/Stop simulation)
 - Real-time status indicator
 - Clean professional dashboard layout
 - No UI freezing during intensive updates
 
-## 📦 Getting Started
+## Getting Started
 
 ### Prerequisites
 
