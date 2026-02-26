@@ -1,3 +1,6 @@
+// Author: Harsh Jain
+// Real-Time Order Book - Order Model
+
 using System;
 
 namespace RealTimeOrderBook.Models
