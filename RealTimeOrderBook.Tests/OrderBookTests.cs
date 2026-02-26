@@ -1,3 +1,6 @@
+// Author: Harsh Jain
+// Real-Time Order Book - NUnit Test Suite
+
 using NUnit.Framework;
 using RealTimeOrderBook.Models;
 
