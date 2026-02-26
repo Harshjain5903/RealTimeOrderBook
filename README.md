@@ -5,20 +5,20 @@
 ![WPF](https://img.shields.io/badge/WPF-Desktop-0078D4?style=flat-square)
 ![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)
 
-A production-quality WPF desktop application that simulates a real-time stock order book, demonstrating modern C# async programming patterns and MVVM architecture suitable for trading systems.
+A WPF desktop application that simulates a real-time stock order book with continuous bid/ask price updates. Built using modern C# async programming patterns and MVVM architecture.
 
-## 📋 Overview
+## Overview
 
-This application simulates a live trading order book with continuous bid/ask price updates, trade execution, and volume tracking. Built with enterprise-grade architecture patterns, it showcases skills essential for financial technology and high-frequency trading systems.
+This application simulates a live trading order book similar to what you'd see in professional trading platforms. It continuously updates bid/ask prices, processes orders, and maintains accurate volume tracking in real-time.
 
-**Key Highlights:**
-- Real-time market data simulation with 200ms update intervals
+**Key features:**
+- Market data simulation with 200ms update intervals
 - Thread-safe order book management
-- Non-blocking UI with proper async/await patterns
-- Full MVVM architecture with zero code-behind logic
-- Comprehensive unit test coverage
+- Non-blocking UI using async/await patterns
+- MVVM architecture with minimal code-behind
+- Unit test coverage with NUnit
 
-## 🏗️ Architecture
+## Architecture
 
 ### Design Patterns & Technologies
 
