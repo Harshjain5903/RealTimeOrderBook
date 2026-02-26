@@ -1,3 +1,6 @@
+// Author: Harsh Jain
+// Real-Time Order Book - MVVM ViewModel with Dispatcher-based UI synchronization
+
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
