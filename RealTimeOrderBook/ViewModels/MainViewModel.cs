@@ -15,8 +15,15 @@ using RealTimeOrderBook.Services;
 
 namespace RealTimeOrderBook.ViewModels
 {
+    /// <summary>
+    /// Main ViewModel implementing MVVM pattern with INotifyPropertyChanged.
+    /// Manages market simulation state and coordinates between Model and View.
+    /// Ensures thread-safe UI updates using Dispatcher.
+    /// </summary>
     public class MainViewModel : INotifyPropertyChanged
     {
+        private const int MaxRecentTrades = 20;
+        
         private readonly MarketSimulator _simulator;
         private readonly OrderBook _orderBook;
         private CancellationTokenSource? _cancellationTokenSource;
@@ -114,8 +121,8 @@ namespace RealTimeOrderBook.ViewModels
                 // Add to recent trades
                 RecentTrades.Insert(0, order);
 
-                // Keep only last 20 trades
-                while (RecentTrades.Count > 20)
+                // Keep only last trades for UI display
+                while (RecentTrades.Count > MaxRecentTrades)
                 {
                     RecentTrades.RemoveAt(RecentTrades.Count - 1);
                 }
