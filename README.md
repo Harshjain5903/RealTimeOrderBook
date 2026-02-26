@@ -96,6 +96,28 @@ RealTimeOrderBook.Tests/
 - Clean professional dashboard layout
 - No UI freezing during intensive updates
 
+## Screenshots
+
+### Main Dashboard
+The application displays real-time market data with live bid/ask updates, spread calculation, and volume tracking.
+
+![Main Dashboard](screenshots/main-dashboard.png)
+*Real-time order book showing AAPL symbol with continuous price updates*
+
+### Live Order Feed
+Color-coded order stream showing recent buy (green) and sell (red) orders with millisecond precision timestamps.
+
+![Order Feed](screenshots/order-feed.png)
+*Recent trades DataGrid with real-time updates every 200ms*
+
+### Simulation Controls
+Start/Stop controls for managing the market data simulation with status indicators.
+
+![Simulation Running](screenshots/simulation-active.png)
+*Active simulation showing dynamic price movements and volume accumulation*
+
+> **Note:** Screenshots will be added after running the application on a Windows machine. WPF applications require Windows OS to execute.
+
 ## Getting Started
 
 ### Prerequisites
