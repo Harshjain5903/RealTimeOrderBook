@@ -27,6 +27,7 @@ namespace RealTimeOrderBook.ViewModels
         private readonly MarketSimulator _simulator;
         private readonly OrderBook _orderBook;
         private readonly PerformanceMetrics _metrics;
+        private readonly MarketDepth _marketDepth;
         private CancellationTokenSource? _cancellationTokenSource;
 
         private string _symbol = "AAPL";
@@ -98,6 +99,7 @@ namespace RealTimeOrderBook.ViewModels
             _simulator = new MarketSimulator();
             _orderBook = new OrderBook(_symbol);
             _metrics = new PerformanceMetrics();
+            _marketDepth = new MarketDepth(_symbol);
             RecentTrades = new ObservableCollection<Order>();
 
             StartCommand = new RelayCommand(async _ => await StartSimulation(), _ => !IsRunning);
@@ -127,8 +129,9 @@ namespace RealTimeOrderBook.ViewModels
         {
             var startTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
             
-            // Update order book
+            // Update order book and market depth
             _orderBook.AddOrder(order);
+            _marketDepth.AddOrder(order);
 
             // Update UI on UI thread
             Application.Current.Dispatcher.Invoke(() =>
