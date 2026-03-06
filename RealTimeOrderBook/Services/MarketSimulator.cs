@@ -41,15 +41,31 @@ namespace RealTimeOrderBook.Services
         {
             try
             {
+                Logger.Info($"Market simulation started for symbol: {symbol}");
+                int orderCount = 0;
+                
                 while (!cancellationToken.IsCancellationRequested)
                 {
                     GenerateRandomOrders(symbol);
+                    orderCount += 2;
+                    
+                    if (orderCount % 100 == 0)
+                    {
+                        Logger.Debug($"Generated {orderCount} orders, current price: ${_currentPrice:F2}");
+                    }
+                    
                     await Task.Delay(UpdateIntervalMs, cancellationToken);
                 }
+                
+                Logger.Info($"Market simulation stopped. Total orders generated: {orderCount}");
             }
             catch (OperationCanceledException)
             {
-                // Expected when cancellation is requested
+                Logger.Debug("Simulation cancelled by user");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Error in market simulation", ex);
             }
         }
 
