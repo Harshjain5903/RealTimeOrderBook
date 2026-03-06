@@ -26,6 +26,7 @@ namespace RealTimeOrderBook.ViewModels
         
         private readonly MarketSimulator _simulator;
         private readonly OrderBook _orderBook;
+        private readonly PerformanceMetrics _metrics;
         private CancellationTokenSource? _cancellationTokenSource;
 
         private string _symbol = "AAPL";
@@ -34,6 +35,8 @@ namespace RealTimeOrderBook.ViewModels
         private decimal _spread;
         private long _volume;
         private bool _isRunning;
+        private decimal _throughput;
+        private decimal _avgLatency;
 
         public string Symbol
         {
@@ -71,6 +74,18 @@ namespace RealTimeOrderBook.ViewModels
             set { _isRunning = value; OnPropertyChanged(); OnPropertyChanged(nameof(StatusText)); }
         }
 
+        public decimal Throughput
+        {
+            get => _throughput;
+            set { _throughput = value; OnPropertyChanged(); }
+        }
+
+        public decimal AvgLatency
+        {
+            get => _avgLatency;
+            set { _avgLatency = value; OnPropertyChanged(); }
+        }
+
         public string StatusText => IsRunning ? "Simulation Running" : "Simulation Stopped";
 
         public ObservableCollection<Order> RecentTrades { get; }
@@ -82,12 +97,14 @@ namespace RealTimeOrderBook.ViewModels
         {
             _simulator = new MarketSimulator();
             _orderBook = new OrderBook(_symbol);
+            _metrics = new PerformanceMetrics();
             RecentTrades = new ObservableCollection<Order>();
 
             StartCommand = new RelayCommand(async _ => await StartSimulation(), _ => !IsRunning);
             StopCommand = new RelayCommand(_ => StopSimulation(), _ => IsRunning);
 
             _simulator.OrderGenerated += OnOrderGenerated;
+            _metrics.Start();
         }
 
         private async Task StartSimulation()
@@ -102,21 +119,33 @@ namespace RealTimeOrderBook.ViewModels
         {
             _cancellationTokenSource?.Cancel();
             IsRunning = false;
+            _metrics.Stop();
+            Logger.Info(_metrics.GetSummary());
         }
 
         private void OnOrderGenerated(object? sender, Order order)
         {
+            var startTimeMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond;
+            
             // Update order book
             _orderBook.AddOrder(order);
 
             // Update UI on UI thread
             Application.Current.Dispatcher.Invoke(() =>
             {
+                // Record latency
+                var latencyMs = DateTime.Now.Ticks / TimeSpan.TicksPerMillisecond - startTimeMs;
+                _metrics.RecordOrderProcessing(latencyMs);
+
                 // Update market data
                 BestBid = _orderBook.BestBid;
                 BestAsk = _orderBook.BestAsk;
                 Spread = _orderBook.Spread;
                 Volume = _orderBook.TotalVolume;
+                
+                // Update performance metrics
+                Throughput = _metrics.OrdersPerSecond;
+                AvgLatency = _metrics.AvgLatencyMs;
 
                 // Add to recent trades
                 RecentTrades.Insert(0, order);
