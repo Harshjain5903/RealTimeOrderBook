@@ -28,6 +28,7 @@ namespace RealTimeOrderBook.ViewModels
         private readonly OrderBook _orderBook;
         private readonly PerformanceMetrics _metrics;
         private readonly MarketDepth _marketDepth;
+        private readonly DataExportService _exportService;
         private CancellationTokenSource? _cancellationTokenSource;
 
         private string _symbol = "AAPL";
@@ -93,6 +94,8 @@ namespace RealTimeOrderBook.ViewModels
 
         public ICommand StartCommand { get; }
         public ICommand StopCommand { get; }
+        public ICommand ExportOrdersCommand { get; }
+        public ICommand ExportStatisticsCommand { get; }
 
         public MainViewModel()
         {
@@ -100,10 +103,13 @@ namespace RealTimeOrderBook.ViewModels
             _orderBook = new OrderBook(_symbol);
             _metrics = new PerformanceMetrics();
             _marketDepth = new MarketDepth(_symbol);
+            _exportService = new DataExportService();
             RecentTrades = new ObservableCollection<Order>();
 
             StartCommand = new RelayCommand(async _ => await StartSimulation(), _ => !IsRunning);
             StopCommand = new RelayCommand(_ => StopSimulation(), _ => IsRunning);
+            ExportOrdersCommand = new RelayCommand(_ => ExportOrders());
+            ExportStatisticsCommand = new RelayCommand(_ => ExportStatistics());
 
             _simulator.OrderGenerated += OnOrderGenerated;
             _metrics.Start();
@@ -166,6 +172,32 @@ namespace RealTimeOrderBook.ViewModels
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void ExportOrders()
+        {
+            try
+            {
+                _exportService.ExportOrdersToCsv(RecentTrades);
+                Logger.Info("Orders exported successfully");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to export orders", ex);
+            }
+        }
+
+        private void ExportStatistics()
+        {
+            try
+            {
+                _exportService.ExportStatisticsToCsv(_symbol, BestBid, BestAsk, Volume, _metrics);
+                Logger.Info("Statistics exported successfully");
+            }
+            catch (Exception ex)
+            {
+                Logger.Error("Failed to export statistics", ex);
+            }
         }
     }
 
