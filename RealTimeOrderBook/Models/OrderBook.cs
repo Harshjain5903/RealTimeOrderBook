@@ -29,9 +29,13 @@ namespace RealTimeOrderBook.Models
         /// Initializes a new OrderBook for the specified symbol.
         /// </summary>
         /// <param name="symbol">Trading symbol (e.g., AAPL, MSFT)</param>
+        /// <exception cref="ArgumentException">Thrown when symbol is null or empty</exception>
         public OrderBook(string symbol)
         {
-            Symbol = symbol;
+            if (string.IsNullOrWhiteSpace(symbol))
+                throw new ArgumentException("Symbol cannot be null or empty", nameof(symbol));
+            
+            Symbol = symbol.ToUpper();
             BestBid = 0;
             BestAsk = 0;
             TotalVolume = 0;
@@ -42,39 +46,51 @@ namespace RealTimeOrderBook.Models
         /// Thread-safe operation using lock-based synchronization.
         /// </summary>
         /// <param name="order">Order to add to the book</param>
+        /// <exception cref="ArgumentNullException">Thrown when order is null</exception>
         public void AddOrder(Order order)
         {
+            if (order == null)
+                throw new ArgumentNullException(nameof(order), "Order cannot be null");
+
             lock (_lock)
             {
-                if (order.Side == OrderSide.Buy)
+                try
                 {
-                    _buyOrders.Add(order);
-                    _buyOrders.Sort((a, b) => b.Price.CompareTo(a.Price)); // Descending
-                    if (_buyOrders.Any())
+                    if (order.Side == OrderSide.Buy)
                     {
-                        BestBid = _buyOrders.First().Price;
+                        _buyOrders.Add(order);
+                        _buyOrders.Sort((a, b) => b.Price.CompareTo(a.Price)); // Descending
+                        if (_buyOrders.Any())
+                        {
+                            BestBid = _buyOrders.First().Price;
+                        }
+                    }
+                    else
+                    {
+                        _sellOrders.Add(order);
+                        _sellOrders.Sort((a, b) => a.Price.CompareTo(b.Price)); // Ascending
+                        if (_sellOrders.Any())
+                        {
+                            BestAsk = _sellOrders.First().Price;
+                        }
+                    }
+
+                    TotalVolume += order.Quantity;
+
+                    // Keep only recent orders (prevent memory growth)
+                    if (_buyOrders.Count > MaxOrdersPerSide)
+                    {
+                        _buyOrders.RemoveRange(MaxOrdersPerSide, _buyOrders.Count - MaxOrdersPerSide);
+                    }
+                    if (_sellOrders.Count > MaxOrdersPerSide)
+                    {
+                        _sellOrders.RemoveRange(MaxOrdersPerSide, _sellOrders.Count - MaxOrdersPerSide);
                     }
                 }
-                else
+                catch (Exception ex)
                 {
-                    _sellOrders.Add(order);
-                    _sellOrders.Sort((a, b) => a.Price.CompareTo(b.Price)); // Ascending
-                    if (_sellOrders.Any())
-                    {
-                        BestAsk = _sellOrders.First().Price;
-                    }
-                }
-
-                TotalVolume += order.Quantity;
-
-                // Keep only recent orders (prevent memory growth)
-                if (_buyOrders.Count > MaxOrdersPerSide)
-                {
-                    _buyOrders.RemoveRange(MaxOrdersPerSide, _buyOrders.Count - MaxOrdersPerSide);
-                }
-                if (_sellOrders.Count > MaxOrdersPerSide)
-                {
-                    _sellOrders.RemoveRange(MaxOrdersPerSide, _sellOrders.Count - MaxOrdersPerSide);
+                    Logger.Error($"Error adding order to book: {order.Symbol}", ex);
+                    throw;
                 }
             }
         }
