@@ -14,16 +14,13 @@ namespace RealTimeOrderBook.Services
     /// </summary>
     public class MarketSimulator
     {
-        private const decimal InitialPrice = 150.00m;
-        private const decimal PriceVolatility = 0.50m;
-        private const int UpdateIntervalMs = 200;
-        private const decimal MinPrice = 100.00m;
-        private const decimal MaxPrice = 200.00m;
-        private const int MinOrderQuantity = 100;
-        private const int MaxOrderQuantity = 1000;
-        
         private readonly Random _random = new Random();
-        private decimal _currentPrice = InitialPrice;
+        private decimal _currentPrice;
+
+        public MarketSimulator()
+        {
+            _currentPrice = ConfigurationManager.Config.InitialPrice;
+        }
 
         /// <summary>
         /// Event raised when a new order is generated.
@@ -41,6 +38,7 @@ namespace RealTimeOrderBook.Services
         {
             try
             {
+                ConfigurationManager.ValidateConfiguration();
                 Logger.Info($"Market simulation started for symbol: {symbol}");
                 int orderCount = 0;
                 
@@ -54,7 +52,7 @@ namespace RealTimeOrderBook.Services
                         Logger.Debug($"Generated {orderCount} orders, current price: ${_currentPrice:F2}");
                     }
                     
-                    await Task.Delay(UpdateIntervalMs, cancellationToken);
+                    await Task.Delay(ConfigurationManager.Config.UpdateIntervalMs, cancellationToken);
                 }
                 
                 Logger.Info($"Market simulation stopped. Total orders generated: {orderCount}");
@@ -71,23 +69,25 @@ namespace RealTimeOrderBook.Services
 
         private void GenerateRandomOrders(string symbol)
         {
+            var config = ConfigurationManager.Config;
+            
             // Simulate price movement (random walk)
-            var priceChange = (decimal)(_random.NextDouble() - 0.5) * PriceVolatility;
+            var priceChange = (decimal)(_random.NextDouble() - 0.5) * config.PriceVolatility;
             _currentPrice += priceChange;
 
             // Keep price in reasonable range
-            if (_currentPrice < MinPrice) _currentPrice = MinPrice;
-            if (_currentPrice > MaxPrice) _currentPrice = MaxPrice;
+            if (_currentPrice < config.MinPrice) _currentPrice = config.MinPrice;
+            if (_currentPrice > config.MaxPrice) _currentPrice = config.MaxPrice;
 
             // Generate buy order (slightly below current price)
             var buyPrice = _currentPrice - (decimal)(_random.NextDouble() * 0.5);
-            var buyQuantity = _random.Next(MinOrderQuantity, MaxOrderQuantity);
+            var buyQuantity = _random.Next(config.MinOrderQuantity, config.MaxOrderQuantity);
             var buyOrder = new Order(symbol, OrderSide.Buy, Math.Round(buyPrice, 2), buyQuantity);
             OrderGenerated?.Invoke(this, buyOrder);
 
             // Generate sell order (slightly above current price)
             var sellPrice = _currentPrice + (decimal)(_random.NextDouble() * 0.5);
-            var sellQuantity = _random.Next(MinOrderQuantity, MaxOrderQuantity);
+            var sellQuantity = _random.Next(config.MinOrderQuantity, config.MaxOrderQuantity);
             var sellOrder = new Order(symbol, OrderSide.Sell, Math.Round(sellPrice, 2), sellQuantity);
             OrderGenerated?.Invoke(this, sellOrder);
         }
